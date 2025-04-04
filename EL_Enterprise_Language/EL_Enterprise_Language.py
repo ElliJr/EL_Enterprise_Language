@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import json
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+# import matplotlib.pyplot as plt
+# from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import smtplib
 import os
 from email.mime.text import MIMEText
@@ -211,8 +211,15 @@ class Aplicativo:
     def criar_pagina_Suporte(self):
         frame = self.paginas["Suporte"]
         
-        botao_suporte = tk.Button(frame, text="Suporte", font=("Arial", 12), bg=self.cor_secundaria, command=lambda: self.abrir_janela_suporte())
+        botao_suporte = tk.Button(frame, text="Suporte", font=("Arial", 12), bg=self.cor_secundaria, command=lambda: self.abrir_janela_suporte(self))
         botao_suporte.pack(pady=20)
+        
+        label_suorte_email = tk.Label(self.abrir_janela_suporte, text="digite o email de destino", font=("Arial", 14))
+        label_suorte_email.pack(pady=5)
+
+
+        label_suporte = tk.Label(self.abrir_janela_suporte, text="Digite sue feedback:", font=("Arial", 14))
+        label_suporte.pack(pady=5)
 
 
     def criar_pagina_conta(self):
@@ -346,6 +353,13 @@ class Aplicativo:
         janela_suporte = tk.Toplevel(self.root)
         janela_suporte.title("Suporte")
         janela_suporte.geometry("400x300")
+
+        entradas = []
+        for campo in campos:
+            tk.Label(janela_suporte, text=campo + ":").pack(pady=5)
+            entry = tk.Entr(janela_suporte)
+            entry.pack(pady=5)
+            entradas.append(entry)
 
 
 if __name__ == "__main__":

@@ -1,12 +1,7 @@
 [
     {
         "usuario": "elli",
-        "email":"elli@gmail.com",
-        "senha": "amor"
-    },
-    {
-        "usuario": "lavinia",
-        "email": "lavinia@gmail.com",
-        "senha": "amor"
+        "email": "elli@gmail.com",
+        "senha": "1234"
     }
 ]

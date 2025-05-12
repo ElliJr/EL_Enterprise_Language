@@ -1,9 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-import json
-import os
-# from janelas import Janelas # Importado dinamicamente dentro da classe
-from conta_user import ContaUser  # Importa a classe ContaUser
+import requests  # Importe a biblioteca requests
 
 class LoginTela:
     def __init__(self, root):
@@ -20,43 +17,62 @@ class LoginTela:
         self.login_frame = tk.Frame(self.root, bg=self.cor_principal)
         self.login_frame.pack(fill=tk.BOTH, expand=True)
 
-        label_titulo = tk.Label(self.login_frame, text="Sistema de Gerenciamento", font=("Arial", 24), fg=self.cor_fonte, bg=self.cor_principal)
+        label_titulo = tk.Label(self.login_frame, text="EL Enterprise Language⚙️", font=("Arial", 24), fg=self.cor_fonte,
+                                 bg=self.cor_principal)
         label_titulo.pack(pady=20)
 
-        label_usuario = tk.Label(self.login_frame, text="Usuário:", font=("Arial", 14), fg=self.cor_fonte, bg=self.cor_principal)
+        # Frame interno para os campos de entrada e botões
+        login_content_frame = tk.Frame(self.login_frame, bg=self.cor_principal)
+        login_content_frame.pack(expand=True)  # Centraliza o frame no espaço restante
+
+        label_usuario = tk.Label(login_content_frame, text="Usuário:", font=("Arial", 14), fg=self.cor_fonte,
+                                  bg=self.cor_principal)
         label_usuario.pack(pady=5)
-        self.entry_usuario = tk.Entry(self.login_frame, font=("Arial", 14))
+        self.entry_usuario = tk.Entry(login_content_frame, font=("Arial", 14))
         self.entry_usuario.pack(pady=5)
 
-        label_senha = tk.Label(self.login_frame, text="Senha:", font=("Arial", 14), fg=self.cor_fonte, bg=self.cor_principal)
+        label_senha = tk.Label(login_content_frame, text="Senha:", font=("Arial", 14), fg=self.cor_fonte,
+                                bg=self.cor_principal)
         label_senha.pack(pady=5)
-        self.entry_senha = tk.Entry(self.login_frame, font=("Arial", 14), show="*")
+        self.entry_senha = tk.Entry(login_content_frame, font=("Arial", 14), show="*")
         self.entry_senha.pack(pady=5)
 
-        botao_entrar = tk.Button(self.login_frame, text="Entrar", font=("Arial", 14), bg=self.cor_secundaria, fg=self.cor_fonte, command=self.verificar_login)
+        botao_entrar = tk.Button(login_content_frame, text="Entrar", font=("Arial", 14), bg=self.cor_secundaria,
+                                  fg=self.cor_fonte, command=self.verificar_login)
         botao_entrar.pack(pady=20)
 
-        botao_cadastro = tk.Button(self.login_frame, text="Cadastrar", font=("Arial", 14), bg=self.cor_secundaria, fg=self.cor_fonte, command=self.cadastro_tela)
+        botao_cadastro = tk.Button(login_content_frame, text="Cadastrar", font=("Arial", 14), bg=self.cor_secundaria,
+                                   fg=self.cor_fonte, command=self.cadastro_tela)
         botao_cadastro.pack(pady=10)
 
     def verificar_login(self):
         usuario = self.entry_usuario.get().strip()
         senha = self.entry_senha.get().strip()
-        usuarios = self.carregar_usuarios()
 
-        for u in usuarios:
-            if u["usuario"] == usuario:
-                if u["senha"] == senha:
-                    self.usuario_logado = usuario
-                    self.login_frame.pack_forget()
-                    # Importa Janelas dinamicamente para evitar dependência circular
-                    from janelas import Janelas
-                    janelas = Janelas(self.root, self.usuario_logado) # Passa o root para a classe Janelas
-                    return
-                else:
-                    messagebox.showerror("Erro", "Senha incorreta.")
-                    return
-        messagebox.showerror("Erro", "Usuário não encontrado.")
+        if not usuario or not senha:
+            messagebox.showerror("Erro", "Preencha todos os campos.")
+            return
+
+        dados = {
+            "usuario": usuario,
+            "senha": senha,
+        }
+
+        try:
+            # Envia os dados para o servidor na rota /login
+            response = requests.post("http://127.0.0.1:3000/login", data=dados)
+
+            if response.status_code == 200:
+                messagebox.showinfo("Sucesso", "Login realizado com sucesso!")
+                self.login_frame.pack_forget()
+                # Importa Janelas dinamicamente para evitar dependência circular
+                from janelas import Janelas
+                janelas = Janelas(self.root, usuario)  # Passa o root para a classe Janelas
+                # self.root.destroy() # Removi esta linha para evitar erro
+            else:
+                messagebox.showerror("Erro", f"Erro ao fazer login: {response.text}")
+        except requests.exceptions.RequestException as e:
+            messagebox.showerror("Erro", f"Erro de conexão: {e}")
 
     def cadastro_tela(self):
         nova_janela = tk.Toplevel(self.root)
@@ -78,37 +94,34 @@ class LoginTela:
         entry_senha = tk.Entry(nova_janela, font=("Arial", 14), show="*")
         entry_senha.pack(pady=5)
 
-        def salvar_usuario():
-            usuario = entry_usuario.get().strip()
-            email = entry_email.get().strip()
-            senha = entry_senha.get().strip()
-
-            if not usuario or not senha:
-                messagebox.showerror("Erro", "Preencha todos os campos.")
-                return
-
-            usuarios = self.carregar_usuarios()
-            if usuario in usuarios:
-                messagebox.showerror("Erro", "Usuário já existe.")
-                return
-
-            usuarios.append({"usuario": usuario, "email": email, "senha": senha})
-            self.salvar_usuarios(usuarios)
-
-            messagebox.showinfo("Sucesso", "Cadastro realizado com sucesso!")
-            nova_janela.destroy()
-
-        botao_salvar = tk.Button(nova_janela, text="Cadastrar", font=("Arial", 14), command=salvar_usuario)
+        botao_salvar = tk.Button(nova_janela, text="Cadastrar", font=("Arial", 14), command=lambda: self.salvar_usuario(nova_janela, entry_usuario, entry_email, entry_senha))
         botao_salvar.pack(pady=20)
 
-    def carregar_usuarios(self):
-        try:
-            with open("usuarios.json", "r", encoding="utf-8") as file:
-                dados = json.load(file)
-                return dados if isinstance(dados, list) else []
-        except (FileNotFoundError, json.JSONDecodeError):
-            return []
+    def salvar_usuario(self, nova_janela, entry_usuario, entry_email, entry_senha): # Passando nova_janela
+        usuario = entry_usuario.get().strip()
+        email = entry_email.get().strip()
+        senha = entry_senha.get().strip()
 
-    def salvar_usuarios(self, usuarios):
-        with open("usuarios.json", "w", encoding="utf-8") as file:
-            json.dump(usuarios, file, indent=4, ensure_ascii=False)
+        if not usuario or not email or not senha:
+            messagebox.showerror("Erro", "Preencha todos os campos.")
+            return
+
+        # Dados a serem enviados no corpo da requisição POST
+        dados = {
+            "usuario": usuario,
+            "email": email,
+            "senha": senha,
+        }
+
+        try:
+            # Envia os dados para o servidor na rota /cadastro
+            response = requests.post("http://127.0.0.1:3000/cadastro", data=dados)
+
+            # Verifica se a requisição foi bem-sucedida (código 200)
+            if response.status_code == 200:
+                messagebox.showinfo("Sucesso", "Cadastro realizado com sucesso!")
+                nova_janela.destroy()
+            else:
+                messagebox.showerror("Erro", f"Erro ao cadastrar: {response.text}")
+        except requests.exceptions.RequestException as e:
+            messagebox.showerror("Erro", f"Erro de conexão: {e}")

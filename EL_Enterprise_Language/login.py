@@ -60,7 +60,9 @@ class LoginTela:
 
         try:
             # Envia os dados para o servidor na rota /login
+            print(f"Tentando logar com usuário: {usuario}, senha: {senha}")
             response = requests.post("http://127.0.0.1:3000/login", data=dados)
+            print(f"Resposta do servidor: {response.status_code}, {response.text}")
 
             if response.status_code == 200:
                 messagebox.showinfo("Sucesso", "Login realizado com sucesso!")

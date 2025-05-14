@@ -18,14 +18,14 @@ MAX_REQUEST_SIZE = 1024 * 1024  # 1MB max request size
 class MyHandler(http.server.BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.sessions = {}  # Inicializa o dicionário sessions
+        self.sessions = {}  # Para armazenar dados da sessão
 
     def do_GET(self):
         """
         Trata requisições GET.
         """
         self.send_response(200)
-        self.send_header("Content-type", "text/plain; charset=utf-8")
+        self.send_header("Content-type", "text/plain")
         self.end_headers()
         self.wfile.write(b"Servidor rodando!\n")
 
@@ -60,7 +60,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
         elif self.path == '/graficos':  # Nova rota para gráficos
             self.gerar_graficos(dados["tipo_grafico"])
         else:
-            self.send_error(404, "Rota não encontrada".encode('utf-8'))
+            self.send_error(404, "Rota não encontrada")
 
     def gerar_graficos(self, tipo_grafico):
         """
@@ -91,7 +91,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
         }
 
         self.send_response(200)
-        self.send_header("Content-type", "application/json; charset=utf-8")
+        self.send_header("Content-type", "application/json")
         self.end_headers()
         self.wfile.write(json.dumps(graficos_base64).encode('utf-8'))
 
@@ -184,21 +184,15 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
         usuarios.append(dados)
         self.salvar_usuarios(usuarios)
 
-        # Envia os dados do usuário de volta para o cliente
         self.send_response(200)
-        self.send_header("Content-type", "application/json; charset=utf-8")
+        self.send_header("Content-type", "text/plain")
         self.end_headers()
-        response_data = {
-            "mensagem": "Utilizador registado com sucesso!",
-            "usuario": dados["usuario"],
-            "email": dados["email"],
-        }
-        self.wfile.write(json.dumps(response_data).encode('utf-8'))
+        self.wfile.write(b"Usuario cadastrado com sucesso!\n")
 
     def processar_login(self, dados):
         """Processa o login de um usuário e inicia a sessão."""
         if not dados["usuario"] or not dados["senha"]:
-            self.send_error(400, "Utilizador e senha são obrigatórios".encode('utf-8'))
+            self.send_error(400, "Usuário e senha são obrigatórios".encode('utf-8'))
             return
 
         usuarios = self.carregar_usuarios()
@@ -207,7 +201,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
                 # Inicia a sessão (simplificado)
                 self.sessions[dados["usuario"]] = {"logado": True, "email": usuario_existente["email"]}
                 self.send_response(200)
-                self.send_header("Content-type", "application/json; charset=utf-8")
+                self.send_header("Content-type", "application/json")
                 self.end_headers()
                 dados_usuario = {
                     "usuario": usuario_existente["usuario"],
@@ -216,18 +210,18 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(dados_usuario).encode('utf-8'))
                 return
 
-        self.send_error(401, "Utilizador ou senha incorretos".encode('utf-8'))
+        self.send_error(401, "Usuário ou senha incorretos".encode('utf-8'))
 
     def processar_conta(self, dados):
         """Retorna os dados do usuário, se a sessão for válida."""
         if not dados["usuario"]:
-            self.send_error(400, "Utilizador é obrigatório".encode('utf-8'))
+            self.send_error(400, "Usuário é obrigatório".encode('utf-8'))
             return
 
         if dados["usuario"] in self.sessions:
             usuario_logado = self.sessions[dados["usuario"]]
             self.send_response(200)
-            self.send_header("Content-type", "application/json; charset=utf-8")
+            self.send_header("Content-type", "application/json")
             self.end_headers()
             dados_usuario = {
                 "usuario": dados["usuario"],
@@ -238,7 +232,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
             self.send_error(401, "Sessão inválida. Faça login novamente.".encode('utf-8'))
 
     def carregar_usuarios(self):
-        """Carrega a lista de utilizadores do arquivo JSON."""
+        """Carrega a lista de usuários do arquivo JSON."""
         if os.path.exists(DATA_FILE):
             try:
                 with open(DATA_FILE, "r", encoding="utf-8") as f:
@@ -249,12 +243,12 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
             return []
 
     def salvar_usuarios(self, usuarios):
-        """Salva a lista de utilizadores no arquivo JSON."""
-        try:    
+        """Salva a lista de usuários no arquivo JSON."""
+        try:
             with open(DATA_FILE, "w", encoding="utf-8") as f:
                 json.dump(usuarios, f, indent=4, ensure_ascii=False)
         except Exception as e:
-            print(f"Erro ao salvar utilizadores: {e}")
+            print(f"Erro ao salvar usuários: {e}")
             self.send_error(500, "Erro ao salvar dados".encode('utf-8'))
 
 

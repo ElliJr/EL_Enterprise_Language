@@ -89,7 +89,7 @@ class LoginTela:
         label_email = tk.Label(nova_janela, text="Email:", font=("Arial", 14))
         label_email.pack(pady=5)
         entry_email = tk.Entry(nova_janela, font=("Arial", 14))
-        entry_email.pack(pady=5)
+        entry_email.pack(pady=5)        
 
         label_senha = tk.Label(nova_janela, text="Senha:", font=("Arial", 14))
         label_senha.pack(pady=5)

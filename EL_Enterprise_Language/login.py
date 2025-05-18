@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import requests  # Importe a biblioteca requests
+import json
 
 class LoginTela:
     def __init__(self, root):
@@ -64,6 +65,7 @@ class LoginTela:
             response = requests.post("http://127.0.0.1:3000/login", data=dados)
             print(f"Resposta do servidor: {response.status_code}, {response.text}")
 
+            # Verifica se a requisição foi bem-sucedida (código 200)
             if response.status_code == 200:
                 messagebox.showinfo("Sucesso", "Login realizado com sucesso!")
                 self.login_frame.pack_forget()
@@ -72,7 +74,8 @@ class LoginTela:
                 janelas = Janelas(self.root, usuario)  # Passa o root para a classe Janelas
                 # self.root.destroy() # Removi esta linha para evitar erro
             else:
-                messagebox.showerror("Erro", f"Erro ao fazer login: {response.text}")
+                self.tratar_erro_requisicao(response, "Erro ao fazer login")
+
         except requests.exceptions.RequestException as e:
             messagebox.showerror("Erro", f"Erro de conexão: {e}")
 
@@ -89,17 +92,18 @@ class LoginTela:
         label_email = tk.Label(nova_janela, text="Email:", font=("Arial", 14))
         label_email.pack(pady=5)
         entry_email = tk.Entry(nova_janela, font=("Arial", 14))
-        entry_email.pack(pady=5)        
+        entry_email.pack(pady=5)
 
         label_senha = tk.Label(nova_janela, text="Senha:", font=("Arial", 14))
         label_senha.pack(pady=5)
         entry_senha = tk.Entry(nova_janela, font=("Arial", 14), show="*")
         entry_senha.pack(pady=5)
 
-        botao_salvar = tk.Button(nova_janela, text="Cadastrar", font=("Arial", 14), command=lambda: self.salvar_usuario(nova_janela, entry_usuario, entry_email, entry_senha))
+        botao_salvar = tk.Button(nova_janela, text="Cadastrar", font=("Arial", 14),
+                                 command=lambda: self.salvar_usuario(nova_janela, entry_usuario, entry_email, entry_senha))
         botao_salvar.pack(pady=20)
 
-    def salvar_usuario(self, nova_janela, entry_usuario, entry_email, entry_senha): # Passando nova_janela
+    def salvar_usuario(self, nova_janela, entry_usuario, entry_email, entry_senha):  # Passando nova_janela
         usuario = entry_usuario.get().strip()
         email = entry_email.get().strip()
         senha = entry_senha.get().strip()
@@ -124,6 +128,22 @@ class LoginTela:
                 messagebox.showinfo("Sucesso", "Cadastro realizado com sucesso!")
                 nova_janela.destroy()
             else:
-                messagebox.showerror("Erro", f"Erro ao cadastrar: {response.text}")
+                self.tratar_erro_requisicao(response, "Erro ao cadastrar")
         except requests.exceptions.RequestException as e:
             messagebox.showerror("Erro", f"Erro de conexão: {e}")
+
+    def tratar_erro_requisicao(self, response, mensagem_padrao):
+        """
+        Trata a resposta da requisição HTTP, exibindo uma mensagem de erro apropriada.
+
+        Args:
+            response: A resposta da requisição requests.Response.
+            mensagem_padrao: A mensagem de erro padrão a ser exibida, caso não seja possível
+                             obter uma mensagem mais específica do servidor.
+        """
+        try:
+            erro_json = response.json()
+            mensagem_erro = erro_json.get("mensagem", mensagem_padrao)  # Obtém a mensagem do JSON
+            messagebox.showerror("Erro", f"{mensagem_padrao}: {mensagem_erro}")
+        except json.JSONDecodeError:
+            messagebox.showerror("Erro", f"{mensagem_padrao}: {response.text}")

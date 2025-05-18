@@ -3,5 +3,17 @@
         "usuario": "elli",
         "email": "jdfdjj",
         "senha": "1234"
+    },
+    {
+        "usuario": "heitor",
+        "email": "hjjjjnjnjn",
+        "senha": "1234",
+        "tipo_grafico": ""
+    },
+    {
+        "usuario": "teste",
+        "email": "teste@teste.com",
+        "senha": "1234",
+        "tipo_grafico": ""
     }
 ]

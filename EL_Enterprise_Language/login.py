@@ -62,7 +62,7 @@ class LoginTela:
         try:
             # Envia os dados para o servidor na rota /login
             print(f"Tentando logar com usuário: {usuario}, senha: {senha}")
-            response = requests.post("http://127.0.0.1:3000/login", data=dados)
+            response = requests.post("https://ellidev21.pythonanywhere.com/login", data=dados)
             print(f"Resposta do servidor: {response.status_code}, {response.text}")
 
             # Verifica se a requisição foi bem-sucedida (código 200)
@@ -121,7 +121,7 @@ class LoginTela:
 
         try:
             # Envia os dados para o servidor na rota /cadastro
-            response = requests.post("http://127.0.0.1:3000/cadastro", data=dados)
+            response = requests.post("https://ellidev21.pythonanywhere.com/cadastro", data=dados)
 
             # Verifica se a requisição foi bem-sucedida (código 200)
             if response.status_code == 200:

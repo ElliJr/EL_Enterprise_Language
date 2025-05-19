@@ -3,8 +3,6 @@ import webbrowser
 
 class Suporte:
     def __init__(self, parent):
-        self.parent = parent
-        self.parent.title("Suporte")
         self.frame.destroy()  # Remove o frame anterior, se existir
         self.frame = tk.Frame(self.parent, bg="white")
         self.frame.pack(fill=tk.BOTH, expand=True)

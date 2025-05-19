@@ -2,10 +2,9 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 class Vendas:
-    def __init__(self, parent):
+    def __init__(self, parent):        
         self.frame = tk.Frame(parent, bg="white")
         self.frame.pack(fill=tk.BOTH, expand=True)
-        
         label = tk.Label(self.frame, text="Vendas", font=("Arial", 24), bg="white")
         label.pack(pady=20)
 

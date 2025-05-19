@@ -7,12 +7,14 @@ from clientes import Clientes
 import config
 # Importe o módulo financeiro
 import financeiro
+import vendas
 import base64
 import urllib.request
 import json
 
 class Janelas:
     def __init__(self, root, usuario_logado):
+        
         self.root = root
         self.usuario_logado = usuario_logado
         self.cor_principal = "#1E3A5F"
@@ -156,7 +158,7 @@ class Janelas:
         # Cria as páginas de Clientes e Produtos usando as classes separadas
         self.paginas["Produtos"] = Produtos(self.content_frame).frame
         self.paginas["Clientes"] = Clientes(self.content_frame).frame
-
+        self.paginas["Vendas"] = vendas.Vendas(self.content_frame).frame
         # Criação das páginas Suporte e Conta (importadas dinamicamente)
         def criar_pagina_suporte():
             from suporte import Suporte

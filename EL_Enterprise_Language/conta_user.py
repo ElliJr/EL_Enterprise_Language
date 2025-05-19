@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import json
-
+import requests  # Importe a biblioteca requests
 
 class ContaUser:
     def __init__(self, parent, usuario_logado):
@@ -23,10 +23,9 @@ class ContaUser:
         label_user = tk.Label(self.frame, text=f"Bem vindo(a) {self.usuario_logado}", font=("Arial", 24), bg="white")
         label_user.pack(pady=20)
 
-        # carrega os dados do usuario
-        dados_usuario = self.carregar_dados("usuarios.json")
+# carrega os dados do usuario
         # Procura os dados do usuário logado
-        usuario_logado = next((u for u in dados_usuario if u["usuario"] == self.usuario_logado), None)
+        usuario_logado = self.carregar_dados(self.usuario_logado)
 
         if usuario_logado:
             label_nome = tk.Label(self.frame, text=f"Nome: {usuario_logado['usuario']}", font=("Arial", 14), bg="white")
@@ -46,7 +45,7 @@ class ContaUser:
         nova_janela.geometry("400x300")
 
         # carrega os dados do usuario
-        dados_usuario = self.carregar_dados("usuarios.json")
+        dados_usuario = self.carregar_dados(self.usuario_logado)
         # Procura os dados do usuário logado
         usuario_logado = next((u for u in dados_usuario if u["usuario"] == self.usuario_logado), None)
 
@@ -78,12 +77,26 @@ class ContaUser:
                 return
 
             # Atualiza os dados do usuário na lista
-            for u in dados_usuario:
-                if u["usuario"] == self.usuario_logado:
-                    u["usuario"] = novo_nome
-                    u["email"] = novo_email
-                    u["senha"] = nova_senha # Por questões de segurança a senha deve ser criptografada
-                    break
+            try:
+                response = requests.post(
+                    "https://ellidev21.pythonanywhere.com/atualizar_conta", 
+                    data={
+                        "usuario_antigo": self.usuario_logado,
+                        "usuario": novo_nome,
+                        "email": novo_email,
+                        "senha": nova_senha
+                    }
+                )
+                if response.status_code == 200:
+                    messagebox.showinfo("Sucesso", "Dados da conta atualizados com sucesso!")
+                    self.usuario_logado = novo_nome
+                    nova_janela.destroy()
+                    self.criar_pagina_conta()  # Atualiza a página de conta
+                else:
+                    msg = response.json().get("message", "Erro ao atualizar os dados.")
+                    messagebox.showerror("Erro", msg)
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro de conexão: {e}")                
 
             # Salva a lista atualizada no arquivo
             self.salvar_dados("usuarios.json", dados_usuario)
@@ -94,12 +107,18 @@ class ContaUser:
         botao_salvar = tk.Button(nova_janela, text="Salvar", font=("Arial", 12), command=salvar_edicoes)
         botao_salvar.pack(pady=10)
 
-    def carregar_dados(self, arquivo):
+    def carregar_dados(self, usuario):
         try:
-            with open(arquivo, "r", encoding="utf-8") as file:
-                dados = json.load(file)
-                return dados if isinstance(dados, list) else []
-        except (FileNotFoundError, json.JSONDecodeError):
+            response = requests.post(
+                "https://ellidev21.pythonanywhere.com/conta", 
+                data={"usuario": usuario}
+            )
+            if response.status_code == 200:
+                return response.json()
+            else:
+                return []
+        except Exception as e:
+            print(f"Erro ao carregar dados: {e}")
             return []
 
     def salvar_dados(self, arquivo, dados):

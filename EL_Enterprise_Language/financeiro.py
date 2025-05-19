@@ -12,6 +12,7 @@ from datetime import datetime
 PORT = 3000
 HOST = "127.0.0.1"
 DATA_FILE = "usuarios_servidor.json"
+VENDAS_FILE = "vendas.json"
 MAX_REQUEST_SIZE = 1024 * 1024  # 1MB max request size
 
 
@@ -19,7 +20,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.sessions = {}  # Para armazenar dados da sessão
-
+        
     def do_GET(self):
         """
         Trata requisições GET.
@@ -96,21 +97,36 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(graficos_base64).encode('utf-8'))
 
     def obter_dados_vendas(self, tipo):
-        """
-        Obtém os dados de rendimento e faturamento do banco de dados ou outra fonte.
-        Esta é uma função de exemplo que retorna dados fictícios.
-        Você deve substituir esta função com sua lógica real de acesso aos dados.
-        """
+        vendas = self.carregar_vendas()
         if tipo == 'mes':
             meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
-            rendimento_mensal = [2000, 2500, 3000, 3200, 3500, 4000, 4500, 4200, 4000, 4300, 4600, 5000]
-            faturamento_mensal = [5000, 5500, 6000, 6500, 7000, 7500, 8000, 7800, 7500, 8000, 8500, 9000]
+            rendimento_mensal = [0] * 12
+            faturamento_mensal = [0] * 12
+            for venda in vendas:
+                try:
+                    data = datetime.strptime(venda["data"], "%Y-%m-%d")
+                    mes_idx = data.month - 1
+                    valor = float(venda["valor"])
+                    rendimento_mensal[mes_idx] += valor
+                    faturamento_mensal[mes_idx] += valor  # Ajuste se quiser lógica diferente
+                except Exception:
+                    continue
             return (meses, rendimento_mensal), (meses, faturamento_mensal)
         elif tipo == 'ano':
-            anos = ['Ano 1', 'Ano 2', 'Ano 3', 'Ano 4', 'Ano 5']
-            rendimento_anual = [35000, 40000, 45000, 50000, 55000]
-            faturamento_anual = [80000, 90000, 100000, 110000, 120000]
-            return (anos, rendimento_anual), (anos, faturamento_anual)
+            anos = {}
+            for venda in vendas:
+                try:
+                    data = datetime.strptime(venda["data"], "%Y-%m-%d")
+                    ano = str(data.year)
+                    valor = float(venda["valor"])
+                    anos.setdefault(ano, 0)
+                    anos[ano] += valor
+                except Exception:
+                    continue
+            anos_ordenados = sorted(anos.keys())
+            rendimento_anual = [anos[a] for a in anos_ordenados]
+            faturamento_anual = rendimento_anual.copy()  # Ajuste se quiser lógica diferente
+            return (anos_ordenados, rendimento_anual), (anos_ordenados, faturamento_anual)
         else:
             return [], []
 
@@ -250,6 +266,16 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
         except Exception as e:
             print(f"Erro ao salvar usuários: {e}")
             self.send_error(500, "Erro ao salvar dados".encode('utf-8'))
+
+    def carregar_vendas(self):
+        if os.path.exists(VENDAS_FILE):
+            try:
+                with open(VENDAS_FILE, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except json.JSONDecodeError:
+                return []
+        else:
+            return []
 
 
 if __name__ == "__main__":

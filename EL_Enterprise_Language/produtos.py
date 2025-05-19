@@ -8,7 +8,7 @@ class Produtos:
     def __init__(self, parent):
         self.parent = parent
         self.frame = tk.Frame(self.parent, bg="white")
-
+        
         self.tree_produtos = ttk.Treeview(self.frame, columns=("#1", "#2", "#3", "#4", "#5"), show="headings")
         self.tree_produtos.heading("#1", text="Cód")
         self.tree_produtos.heading("#2", text="Produto")

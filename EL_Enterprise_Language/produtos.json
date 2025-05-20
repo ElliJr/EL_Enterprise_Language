@@ -1,0 +1,14 @@
+[
+    {
+        "Nome do Produto": "fone",
+        "Categoria": "assecorio",
+        "Preço": "34,99",
+        "Estoque": "12"
+    },
+    {
+        "Nome do Produto": "camisa",
+        "Categoria": "assecorio",
+        "Preço": "29,99",
+        "Estoque": "210"
+    }
+]

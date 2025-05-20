@@ -32,7 +32,7 @@ class Janelas:
 
         self.paginas = {}
 
-        botoes = ["Financeiro", "Vendas", "Compras", "Clientes", "Produtos", "Relatórios", "Configurações", "Suporte", "Conta"]
+        botoes = ["Inicio","Financeiro", "Vendas", "Compras", "Clientes", "Produtos", "Relatórios", "Configurações", "Suporte", "Conta"]
         for btn in botoes:
             self.criar_botao_personalizado(self.sidebar, btn)
 
@@ -68,46 +68,6 @@ class Janelas:
         self.paginas["Financeiro"] = frame_financeiro
         self.atualizar_graficos() #carrega os gráficos assim que a página é criada
 
-    def atualizar_graficos(self):
-        """Obtém os gráficos do servidor e os exibe na página."""
-        # Tipo de gráfico (mês ou ano) - você pode adicionar uma forma de o usuário escolher
-        tipo_grafico = "mes"
-
-        # URL do servidor para obter os gráficos
-        url = f"http://127.0.0.1:3000/graficos?tipo_grafico={tipo_grafico}"
-
-        try:
-            # Envia a requisição para o servidor
-            with urllib.request.urlopen(url) as response:
-                if response.getcode() == 200:
-                    # Carrega a resposta JSON
-                    graficos_json = json.loads(response.read().decode('utf-8'))
-
-                    # Decodifica as imagens base64 e exibe nos Labels
-                    imagem_rendimento_base64 = graficos_json["rendimento"]
-                    imagem_faturamento_base64 = graficos_json["faturamento"]
-
-                    # Exibe o gráfico de rendimento
-                    if imagem_rendimento_base64:  # Verifica se a string não está vazia
-                        imagem_rendimento_bytes = base64.b64decode(imagem_rendimento_base64)
-                        imagem_rendimento_tk = tk.PhotoImage(data=imagem_rendimento_bytes)
-                        self.label_rendimento.config(image=imagem_rendimento_tk)
-                        self.label_rendimento.image = imagem_rendimento_tk  # Garante que a imagem não seja coletada pelo GC
-
-                    # Exibe o gráfico de faturamento
-                    if imagem_faturamento_base64:
-                        imagem_faturamento_bytes = base64.b64decode(imagem_faturamento_base64)
-                        imagem_faturamento_tk = tk.PhotoImage(data=imagem_faturamento_bytes)
-                        self.label_faturamento.config(image=imagem_faturamento_tk)
-                        self.label_faturamento.image = imagem_faturamento_tk
-
-                else:
-                    print(f"Erro ao obter gráficos do servidor: {response.getcode()}")
-                    tk.messagebox.showerror("Erro", f"Erro ao obter gráficos: {response.getcode()}")
-
-        except Exception as e:
-            print(f"Erro ao conectar com o servidor: {e}")
-            tk.messagebox.showerror("Erro", f"Erro ao conectar com o servidor: {e}")
 
     def criar_pagina_configuracoes(self):
         frame_config = tk.Frame(self.content_frame, bg="white")
@@ -147,7 +107,7 @@ class Janelas:
         self.paginas["Configurações"] = frame_config
 
     def criar_paginas(self):
-        for nome in ["Vendas", "Compras", "Relatórios"]:
+        for nome in ["Vendas", "Compras", "Inicio"]:
             frame = tk.Frame(self.content_frame, bg="white")
             label = tk.Label(frame, text=nome, font=("Arial", 24), bg="white")
             label.pack(pady=20)
@@ -170,7 +130,7 @@ class Janelas:
 
         # Adiciona os comandos de criação de página aos botões
         for nome_botao, funcao_criar in [("Suporte", criar_pagina_suporte), ("Conta", criar_pagina_conta)]:
-            botao = self.sidebar.winfo_children()[["Financeiro", "Vendas", "Compras", "Clientes", "Produtos", "Relatórios", "Configurações", "Suporte", "Conta"].index(nome_botao)]  # Pega o botão da sidebar
+            botao = self.sidebar.winfo_children()[["Inicio","Financeiro", "Vendas", "Compras", "Clientes", "Produtos", "Relatórios", "Configurações", "Suporte", "Conta"].index(nome_botao)]  # Pega o botão da sidebar
             botao.config(command=lambda nome=nome_botao, func=funcao_criar: [func(), self.mudar_pagina(nome)])  # Atualiza o comando do botão
 
         criar_pagina_suporte()  # Cria a página de suporte inicialmente

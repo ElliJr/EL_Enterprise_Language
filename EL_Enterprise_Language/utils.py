@@ -72,13 +72,3 @@ def remover_item(parent, arquivo_salvar, lista_dados, treeview):
     else:
         messagebox.showerror("Erro", "Não foi possível encontrar o item na lista de dados.")
 
-def aplicar_tema(root):
-    tema = config.get_tema()
-    if tema == "Claro":
-        root.config(bg="white")
-        # Configure as cores dos outros widgets para o tema claro
-    elif tema == "Escuro":
-        root.config(bg="#333333")
-        # Configure as cores dos outros widgets para o tema escuro
-    # Adicione mais temas conforme necessário
-# Outras funções que você possa ter em utils.py

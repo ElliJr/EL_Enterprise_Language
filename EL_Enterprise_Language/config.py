@@ -1,58 +1,52 @@
-# config.py
-import json
-import os
 import tkinter as tk
+import webbrowser
 
-tema_atual = "Claro"
-CONFIG_FILE = "config.json"
-
-def get_tema():
-    global tema_atual
-    if os.path.exists(CONFIG_FILE):
-        try:
-            with open(CONFIG_FILE, "r") as f:
-                data = json.load(f)
-                tema_atual = data.get("tema", "Claro")
-        except (FileNotFoundError, json.JSONDecodeError):
-            pass # Mantém o tema padrão se houver erro ao carregar
-    return tema_atual
-
-def set_tema(novo_tema):
-    global tema_atual
-    tema_atual = novo_tema
-    try:
-        with open(CONFIG_FILE, "w") as f:
-            json.dump({"tema": tema_atual}, f)
-    except Exception as e:
-        print(f"Erro ao salvar a configuração do tema: {e}")
-
-# Exemplo de layout para tela de configurações
-class ConfiguracoesTela:
+class PainelControle:
     def __init__(self, master):
-        self.frame = tk.Frame(master)
-        self.frame.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+        self.frame = tk.Frame(master, bg="#1E3A5F")
+        self.frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
-        master.grid_rowconfigure(0, weight=1)
-        master.grid_columnconfigure(0, weight=1)
+        # Título
+        tk.Label(self.frame, text="Painel de Controle", font=("Arial", 28), bg="#1E3A5F", fg="white").grid(row=0, column=0, columnspan=5, pady=(0, 20))
 
-        titulo = tk.Label(self.frame, text="Configurações", font=("Arial", 28))
-        titulo.grid(row=0, column=0, columnspan=2, pady=(0, 20))
+        # Cabeçalho
+        tk.Label(self.frame, text="Categorias", font=("Arial", 14, "bold"), bg="#1E3A5F", fg="white").grid(row=1, column=1, sticky="w", padx=10)
+        tk.Label(self.frame, text="Configuração dentro da Categoria", font=("Arial", 14, "bold"), bg="#1E3A5F", fg="white").grid(row=1, column=3, sticky="w", padx=10)
 
-        btn_claro = tk.Button(self.frame, text="Tema Claro")
-        btn_claro.grid(row=1, column=0, pady=5, sticky="ew")
+        categorias = [
+            ("I.", "Contas de Usuário", "👤", "Ferramentas Administrativas", "🛠️"),
+            ("II.", "Programas", "📦", "Grupo Doméstico", "🌐"),
+            ("III.", "Rede e Internet", "🌐", "Gadgets da Área de Trabalho", "🖥️"),
+            ("IV.", "Sistema e Segurança", "🔒", "Gerenciador de Credenciais", "🔑"),
+        ]
 
-        btn_escuro = tk.Button(self.frame, text="Tema Escuro")
-        btn_escuro.grid(row=2, column=0, pady=5, sticky="ew")
+        for i, (num, cat, icat, conf, iconf) in enumerate(categorias, start=2):
+            # Numeração romana
+            tk.Label(self.frame, text=num, font=("Arial", 12, "bold"), bg="#1E3A5F", fg="white").grid(row=i, column=0, sticky="e", padx=(10,0))
+            # Categoria com ícone
+            tk.Label(self.frame, text=icat, font=("Arial", 18), bg="#1E3A5F", fg="white").grid(row=i, column=1, sticky="e", padx=(0,0))
+            tk.Button(self.frame, text=cat, font=("Arial", 12), bg="#2C5EAA", fg="white", relief="flat", 
+                      command=lambda c=cat: self.acao_categoria(c)).grid(row=i, column=2, sticky="w", padx=(0,10), pady=5)
+            # Espaço para "()" (radio button visual)
+            tk.Label(self.frame, text="( )", font=("Arial", 14), bg="#1E3A5F", fg="white").grid(row=i, column=3, sticky="e")
+            # Configuração dentro da categoria com ícone
+            tk.Label(self.frame, text=iconf, font=("Arial", 18), bg="#1E3A5F", fg="white").grid(row=i, column=4, sticky="e", padx=(10,0))
+            tk.Button(self.frame, text=conf, font=("Arial", 12), bg="#D9A87E", fg="black", relief="flat", 
+                      command=lambda c=conf: self.acao_configuracao(c)).grid(row=i, column=5, sticky="w", padx=(0,10), pady=5)
 
-        btn_padrao = tk.Button(self.frame, text="Tema Padrão")
-        btn_padrao.grid(row=3, column=0, pady=5, sticky="ew")
+        # Ajuste de colunas
+        for col in range(6):
+            self.frame.grid_columnconfigure(col, weight=0)
+        self.frame.grid_columnconfigure(2, weight=1)
+        self.frame.grid_columnconfigure(5, weight=1)
 
-        # Expande os botões para ocupar toda a largura do frame
-        self.frame.grid_columnconfigure(0, weight=1)
+    def acao_categoria(self, categoria):
+        print(f"Clicou na categoria: {categoria}")
 
-# Para testar isoladamente:
-if __name__ == "__main__":
-    root = tk.Tk()
-    ConfiguracoesTela(root)
-    root.minsize(400, 300)
-    root.mainloop()
+    def acao_configuracao(self, configuracao):
+        print(f"Clicou na configuração: {configuracao}")
+
+    def abrir_pagina_web(self):
+        url = "https://www.exemplo.com"
+        webbrowser.open_new_tab(url)
+

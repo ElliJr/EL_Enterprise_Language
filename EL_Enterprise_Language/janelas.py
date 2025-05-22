@@ -11,8 +11,6 @@ import base64
 import urllib.request
 import json
 from inicio import Inicio
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import matplotlib.pyplot as plt
 
 class Janelas:
     def __init__(self, root, usuario_logado):
@@ -56,39 +54,29 @@ class Janelas:
         label_titulo = tk.Label(frame_financeiro, text="Gráficos", font=("Arial", 24), bg="white")
         label_titulo.pack(pady=20)
 
-        # Input para valores
-        label_input = tk.Label(frame_financeiro, text="Digite os valores separados por vírgula:", bg="white")
-        label_input.pack(pady=5)
-        entry_valores = tk.Entry(frame_financeiro, width=40)
-        entry_valores.pack(pady=5)
+        # Crie os widgets para exibir os gráficos (Labels para as imagens)
+        self.label_rendimento = tk.Label(frame_financeiro, bg="white")
+        self.label_rendimento.pack(pady=10)
+        self.label_faturamento = tk.Label(frame_financeiro, bg="white")
+        self.label_faturamento.pack(pady=10)
 
-        # Frame para o gráfico
-        frame_grafico = tk.Frame(frame_financeiro, bg="white")
-        frame_grafico.pack(pady=10, fill=tk.BOTH, expand=True)
+        # Botão para atualizar os gráficos
+        btn_atualizar_graficos = tk.Button(frame_financeiro, text="Atualizar Gráficos", command=self.atualizar_graficos)
+        btn_atualizar_graficos.pack(pady=10)
 
-        def desenhar_grafico():
-            # Limpa o gráfico anterior, se houver
-            for widget in frame_grafico.winfo_children():
-                widget.destroy()
-            try:
-                valores = [float(v.strip()) for v in entry_valores.get().split(",") if v.strip()]
-                if not valores:
-                    raise ValueError("Digite ao menos um valor.")
-                labels = [f'Valor {i+1}' for i in range(len(valores))]
-                fig, ax = plt.subplots(figsize=(5, 4))
-                ax.pie(valores, labels=labels, autopct='%1.1f%%')
-                ax.set_title('Gráfico de Pizza')
-                ax.axis('equal')
-                canvas = FigureCanvasTkAgg(fig, master=frame_grafico)
-                canvas.draw()
-                canvas.get_tk_widget().pack()
-            except Exception as e:
-                tk.messagebox.showerror("Erro", f"Valores inválidos: {e}")
-
-        btn_gerar = tk.Button(frame_financeiro, text="Gerar Gráfico de Pizza", command=desenhar_grafico, bg="#2C5EAA", fg="white")
-        btn_gerar.pack(pady=10)
+        # Botão para abrir gráfico de pizza
+        btn_piechart = tk.Button(
+            frame_financeiro,
+            text="Abrir Gráfico de Pizza",
+            bg="#2C5EAA",
+            fg="white",
+            font=("Arial", 12),
+            command=self.abrir_grafico_pizza
+        )
+        btn_piechart.pack(pady=10)
 
         self.paginas["Financeiro"] = frame_financeiro
+        self.atualizar_graficos()
 
     def abrir_grafico_pizza(self):
         # Exemplo: valores fictícios, troque por dados reais do seu sistema se quiser
@@ -131,11 +119,10 @@ class Janelas:
         criar_pagina_conta()
 
         # Cria a página Financeiro
-        self.criar_pagina_financeiro()
 
                     # Configure header colors if needed
 
     def abrir_pagina(self, nome):
         self.mudar_pagina(nome)
 
-Graficos()  # Abre a janela de gráficos
+  # Abre a janela de gráficos

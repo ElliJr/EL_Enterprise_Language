@@ -1,37 +1,51 @@
-# # filepath: graficos-piechart/src/graficos.py
+import tkinter as tk
+from tkinter import messagebox
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-# import tkinter as tk
-# from tkinter import messagebox
-# import matplotlib.pyplot as plt
+class Graficos:
+    def __init__(self, parent=None):
+        # Se parent for None, cria uma janela própria
+        self.is_standalone = parent is None
+        self.parent = parent if parent else tk.Tk()
+        if self.is_standalone:
+            self.parent.title("Pie Chart Generator")
+            self.parent.geometry("400x200")
+        self.build_interface()
 
-# def generate_pie_chart(values):
-#     labels = [f'Value {i+1}' for i in range(len(values))]
-#     plt.figure(figsize=(8, 6))
-#     plt.pie(values, labels=labels, autopct='%1.1f%%')
-#     plt.title('Pie Chart')
-#     plt.axis('equal')  # Equal aspect ratio ensures that pie chart is circular.
-#     plt.show()
+    def build_interface(self):
+        label = tk.Label(self.parent, text="Digite os valores separados por vírgula:")
+        label.pack(pady=10)
 
-# def submit_values():
-#     try:
-#         input_values = entry.get().split(',')
-#         values = [float(value.strip()) for value in input_values]
-#         if any(v < 0 for v in values):
-#             raise ValueError("Values must be non-negative.")
-#         generate_pie_chart(values)
-#     except ValueError as e:
-#         messagebox.showerror("Input Error", str(e))
+        self.entry = tk.Entry(self.parent, width=50)
+        self.entry.pack(pady=10)
 
-# app = tk.Tk()
-# app.title("Pie Chart Generator")
+        submit_button = tk.Button(self.parent, text="Gerar Gráfico de Pizza", command=self.submit_values)
+        submit_button.pack(pady=20)
 
-# label = tk.Label(app, text="Enter values separated by commas:")
-# label.pack(pady=10)
+    def submit_values(self):
+        try:
+            input_values = self.entry.get().split(',')
+            values = [float(value.strip()) for value in input_values]
+            if any(v < 0 for v in values):
+                raise ValueError("Valores devem ser não-negativos.")
+            self.generate_pie_chart(values)
+        except ValueError as e:
+            messagebox.showerror("Erro de entrada", str(e))
 
-# entry = tk.Entry(app, width=50)
-# entry.pack(pady=10)
+    @staticmethod
+    def generate_pie_chart(self, values):
+        from matplotlib import pyplot as plt
+        labels = [f'Valor {i+1}' for i in range(len(values))]
+        fig, ax = plt.subplots(figsize=(5, 4))
+        ax.pie(values, labels=labels, autopct='%1.1f%%')
+        ax.set_title('Gráfico de Pizza')
+        ax.axis('equal')
+        canvas = FigureCanvasTkAgg(fig, master=self.frame_grafico)
+        canvas.draw()
+        canvas.get_tk_widget().pack()
 
-# submit_button = tk.Button(app, text="Generate Pie Chart", command=submit_values)
-# submit_button.pack(pady=20)
-
-# app.mainloop()
+# Para testar isoladamente:
+# if __name__ == "__main__":
+#     Graficos()
+#     tk.mainloop()

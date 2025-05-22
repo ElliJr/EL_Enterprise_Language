@@ -4,8 +4,9 @@ import requests  # Importe a biblioteca requests
 import json
 
 class LoginTela:
-    def __init__(self, root):
+    def __init__(self, root, on_login=None):
         self.root = root
+        self.on_login = on_login
         self.root.title("EL Enterprise Language⚙️")
         self.root.geometry("1300x800")
         self.cor_principal = "#1E3A5F"
@@ -50,6 +51,7 @@ class LoginTela:
         usuario = self.entry_usuario.get().strip()
         senha = self.entry_senha.get().strip()
 
+
         if not usuario or not senha:
             messagebox.showerror("Erro", "Preencha todos os campos.")
             return
@@ -69,9 +71,12 @@ class LoginTela:
             if response.status_code == 200:
                 messagebox.showinfo("Sucesso", "Login realizado com sucesso!")
                 self.login_frame.pack_forget()
+                if self.on_login:
+                    self.on_login(usuario)  # Chama a função de callback com o usuário logado
+
                 # Importa Janelas dinamicamente para evitar dependência circular
-                from janelas import Janelas
-                janelas = Janelas(self.root, usuario)  # Passa o root para a classe Janelas
+                # from janelas import Janelas
+                # janelas = Janelas(self.root, usuario)  # Passa o root para a classe Janelas
                 # self.root.destroy() # Removi esta linha para evitar erro
             else:
                 self.tratar_erro_requisicao(response, "Erro ao fazer login")

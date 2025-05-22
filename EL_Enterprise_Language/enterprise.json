@@ -2,6 +2,6 @@
     {
         "Name": "Enterprise",
         "Version": "1.0.2",
-        "Description": "Enterprise is a large-scale, multi-user system designed for complex business operations. It includes advanced features such as user management, role-based access control, and extensive reporting capabilities.",
+        "Description": "Enterprise é um sistema de grande escala, multiusuário, projetado para operações empresariais complexas. Inclui recursos avançados como gerenciamento de usuários, controle de acesso baseado em funções e amplas capacidades de relatórios."
     }
 ]

@@ -28,84 +28,44 @@ class ContaUser:
         usuario_logado = self.carregar_dados(self.usuario_logado)
 
         if usuario_logado:
-            label_nome = tk.Label(self.frame, text=f"Nome: {usuario_logado['usuario']}", font=("Arial", 14), bg="white")
-            label_nome.pack(pady=10)
-            label_email = tk.Label(self.frame, text=f"Email: {usuario_logado['email']}", font=("Arial", 14), bg="white")
-            label_email.pack(pady=10)
+            # Frame de perfil com borda e padding
+            perfil_frame = tk.Frame(self.frame, bg="#181818", bd=2, relief="groove")
+            perfil_frame.pack(pady=30, padx=30, fill="x", expand=True)
+
+            # Ícone ou avatar (opcional, pode usar um emoji ou imagem)
+            avatar = tk.Label(perfil_frame, text="👤", font=("Arial", 48), bg="#181818", fg="#D9A87E")
+            avatar.pack(pady=(20, 10))
+
+            # Nome do usuário
+            label_nome = tk.Label(
+                perfil_frame,
+                text=usuario_logado['usuario'],
+                font=("Arial", 20, "bold"),
+                bg="#181818",
+                fg="#D9A87E"
+            )
+            label_nome.pack(pady=(0, 5))
+
+            # Email do usuário
+            label_email = tk.Label(
+                perfil_frame,
+                text=f"Email: {usuario_logado['email']}",
+                font=("Arial", 14),
+                bg="#181818",
+                fg="#FFFFFF"
+            )
+            label_email.pack(pady=(0, 20))
+
         else:
-            label_nome = tk.Label(self.frame, text="Usuário não encontrado", font=("Arial", 14), bg="white")
-            label_nome.pack(pady=10)
+            label_nome = tk.Label(
+                self.frame,
+                text="Usuário não encontrado",
+                font=("Arial", 16, "bold"),
+                bg="white",
+                fg="red"
+            )
+            label_nome.pack(pady=30)
 
-        tk.Button(self.frame, text="Editar Conta", font=("Arial", 12), bg="#2C5EAA", fg="white",
-                  command=self.abrir_janela_editar_conta).pack(pady=20)
-
-    def abrir_janela_editar_conta(self):
-        nova_janela = tk.Toplevel(self.parent)
-        nova_janela.title("Editar Conta")
-        nova_janela.geometry("400x300")
-
-        # carrega os dados do usuario
-        dados_usuario = self.carregar_dados(self.usuario_logado)
-        # Procura os dados do usuário logado
-        usuario_logado = next((u for u in dados_usuario if u["usuario"] == self.usuario_logado), None)
-
-        label_nome = tk.Label(nova_janela, text="Nome:", font=("Arial", 14))
-        label_nome.pack(pady=5)
-        entry_nome = tk.Entry(nova_janela, font=("Arial", 12))
-        entry_nome.insert(0, usuario_logado["usuario"])
-        entry_nome.pack(pady=5)
-
-        label_email = tk.Label(nova_janela, text="Email:", font=("Arial", 14))
-        label_email.pack(pady=5)
-        entry_email = tk.Entry(nova_janela, font=("Arial", 12))
-        entry_email.insert(0, usuario_logado["email"])
-        entry_email.pack(pady=5)
-
-        label_senha = tk.Label(nova_janela, text="Senha:", font=("Arial", 14))
-        label_senha.pack(pady=5)
-        entry_senha = tk.Entry(nova_janela, font=("Arial", 12), show="*")
-        entry_senha.insert(0, usuario_logado["senha"])
-        entry_senha.pack(pady=5)
-
-        def salvar_edicoes():
-            novo_nome = entry_nome.get().strip()
-            novo_email = entry_email.get().strip()
-            nova_senha = entry_senha.get().strip()
-
-            if not novo_nome or not novo_email or not nova_senha:
-                messagebox.showerror("Erro", "Preencha todos os campos.")
-                return
-
-            # Atualiza os dados do usuário na lista
-            try:
-                response = requests.post(
-                    "https://ellidev21.pythonanywhere.com/atualizar_conta", 
-                    data={
-                        "usuario_antigo": self.usuario_logado,
-                        "usuario": novo_nome,
-                        "email": novo_email,
-                        "senha": nova_senha
-                    }
-                )
-                if response.status_code == 200:
-                    messagebox.showinfo("Sucesso", "Dados da conta atualizados com sucesso!")
-                    self.usuario_logado = novo_nome
-                    nova_janela.destroy()
-                    self.criar_pagina_conta()  # Atualiza a página de conta
-                else:
-                    msg = response.json().get("message", "Erro ao atualizar os dados.")
-                    messagebox.showerror("Erro", msg)
-            except Exception as e:
-                messagebox.showerror("Erro", f"Erro de conexão: {e}")                
-
-            # Salva a lista atualizada no arquivo
-            self.salvar_dados("usuarios.json", dados_usuario)
-            messagebox.showinfo("Sucesso", "Dados da conta atualizados com sucesso!")
-            nova_janela.destroy()
-            self.criar_pagina_conta()  # Atualiza a página de conta
-
-        botao_salvar = tk.Button(nova_janela, text="Salvar", font=("Arial", 12), command=salvar_edicoes)
-        botao_salvar.pack(pady=10)
 
     def carregar_dados(self, usuario):
         try:

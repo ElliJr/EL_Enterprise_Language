@@ -2,6 +2,33 @@ import tkinter as tk
 from tkinter import messagebox
 import requests  # Importe a biblioteca requests
 import json
+import os
+
+ARQUIVO_DADOS = "contas_data.json"
+dados_contas_gerais = {}
+
+def carregar_dados():
+    global dados_contas_gerais
+    if os.path.exists(ARQUIVO_DADOS):
+        try:
+            with open(ARQUIVO_DADOS, 'r', encoding='utf-8') as f:
+                dados_contas_gerais = json.load(f)
+        except json.JSONDecodeError:
+            messagebox.showerror("Erro ao Carregar", f"O arquivo {ARQUIVO_DADOS} está corrompido. Iniciando com dados vazios.")
+            dados_contas_gerais = {}
+        except Exception as e:
+            messagebox.showerror("Erro ao Carregar", f"Ocorreu um erro inesperado ao carregar os dados: {e}")
+            dados_contas_gerais = {}
+    else:
+        dados_contas_gerais = {}
+
+def salvar_dados():
+    global dados_contas_gerais
+    try:
+        with open(ARQUIVO_DADOS, 'w', encoding='utf-8') as f:
+            json.dump(dados_contas_gerais, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        messagebox.showerror("Erro ao Salvar", f"Ocorreu um erro ao salvar os dados: {e}")
 
 class LoginTela:
     def __init__(self, root, on_login=None):
@@ -34,7 +61,7 @@ class LoginTela:
         self.entry_usuario.pack(pady=5)
 
         label_senha = tk.Label(login_content_frame, text="Senha:", font=("Arial", 14), fg=self.cor_fonte,
-                                bg=self.cor_principal)
+                                 bg=self.cor_principal)
         label_senha.pack(pady=5)
         self.entry_senha = tk.Entry(login_content_frame, font=("Arial", 14), show="*")
         self.entry_senha.pack(pady=5)
@@ -50,7 +77,6 @@ class LoginTela:
     def verificar_login(self):
         usuario = self.entry_usuario.get().strip()
         senha = self.entry_senha.get().strip()
-
 
         if not usuario or not senha:
             messagebox.showerror("Erro", "Preencha todos os campos.")
@@ -70,14 +96,9 @@ class LoginTela:
             # Verifica se a requisição foi bem-sucedida (código 200)
             if response.status_code == 200:
                 messagebox.showinfo("Sucesso", "Login realizado com sucesso!")
-                self.login_frame.pack_forget()
+                self.login_frame.pack_forget() # Esconde o frame de login
                 if self.on_login:
                     self.on_login(usuario)  # Chama a função de callback com o usuário logado
-
-                # Importa Janelas dinamicamente para evitar dependência circular
-                # from janelas import Janelas
-                # janelas = Janelas(self.root, usuario)  # Passa o root para a classe Janelas
-                # self.root.destroy() # Removi esta linha para evitar erro
             else:
                 self.tratar_erro_requisicao(response, "Erro ao fazer login")
 
@@ -105,7 +126,7 @@ class LoginTela:
         entry_senha.pack(pady=5)
 
         botao_salvar = tk.Button(nova_janela, text="Cadastrar", font=("Arial", 14),
-                                 command=lambda: self.salvar_usuario(nova_janela, entry_usuario, entry_email, entry_senha))
+                                  command=lambda: self.salvar_usuario(nova_janela, entry_usuario, entry_email, entry_senha))
         botao_salvar.pack(pady=20)
 
     def salvar_usuario(self, nova_janela, entry_usuario, entry_email, entry_senha):  # Passando nova_janela
@@ -152,3 +173,14 @@ class LoginTela:
             messagebox.showerror("Erro", f"{mensagem_padrao}: {mensagem_erro}")
         except json.JSONDecodeError:
             messagebox.showerror("Erro", f"{mensagem_padrao}: {response.text}")
+
+    def salvar_dados(self, arquivo, dados):
+        """
+        Salva os dados em um arquivo JSON.
+
+        Args:
+            arquivo: O caminho do arquivo onde os dados serão salvos.
+            dados: Os dados a serem salvos no arquivo.
+        """
+        with open(arquivo, 'w') as f:
+            json.dump(dados, f, indent=4)

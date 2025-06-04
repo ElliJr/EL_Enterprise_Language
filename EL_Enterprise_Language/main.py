@@ -1,15 +1,28 @@
 import tkinter as tk
-from login import LoginTela
-from janelas import Janelas  # Importe sua tela principal
+from login import LoginTela # Importa a classe LoginTela
+from janelas import Janelas     # Importa a classe Janelas (sua tela principal)
 
 def abrir_janelas(usuario_logado):
-    # Fecha a tela de login e abre a tela principal
+    """
+    Função chamada após um login bem-sucedido.
+    Fecha a tela de login e abre a tela principal de gestão financeira.
+    """
     for widget in root.winfo_children():
         widget.destroy()
-    Janelas(root, usuario_logado)  # Mostra a tela principal, que já abre na página "Inicio"
+    # Passe o nome do usuário logado para a tela principal
+    Janelas(root, usuario_logado) 
 
 if __name__ == "__main__":
     root = tk.Tk()
-    # Passe a função abrir_janelas para o LoginTela
-    login_tela = LoginTela(root, on_login=abrir_janelas)
+    # A LoginTela define o título e a geometria da janela, então não é estritamente necessário aqui,
+    # mas é bom ter um título padrão.
+    root.title("Aplicação de Gestão Financeira") 
+    # A LoginTela define a geometria para 1300x800, então esta linha pode ser redundante
+    # ou servir como um fallback inicial antes da LoginTela assumir o controle.
+    root.geometry("550x500") 
+
+    # Cria uma instância da tela de login, passando a função de callback
+    # O parâmetro 'on_login' da LoginTela é usado para a função que será chamada após um login bem-sucedido.
+    login_tela = LoginTela(root, on_login=abrir_janelas) 
+    
     root.mainloop()

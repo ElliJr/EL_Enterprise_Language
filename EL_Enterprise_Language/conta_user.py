@@ -6,45 +6,47 @@ import requests  # Importe a biblioteca requests
 class ContaUser:
     def __init__(self, parent, usuario_logado):
         self.parent = parent
-        self.frame = tk.Frame(self.parent, bg="white")
+        self.frame = tk.Frame(self.parent, bg="#181818")
         self.frame.pack(fill=tk.BOTH, expand=True)
         self.usuario_logado = usuario_logado # Recebe o usuario logado
 
         self.criar_pagina_conta()
 
     def criar_pagina_conta(self):
-        # frame = self.paginas["Conta"]
-
         # Certifique-se de que um usuário está logado
         if not self.usuario_logado:
             messagebox.showerror("Erro", "Nenhum usuário logado.")
             return
 
-        label_user = tk.Label(self.frame, text=f"Bem vindo(a) {self.usuario_logado}", font=("Arial", 24), bg="white")
-        label_user.pack(pady=20)
+        # Limpa o frame antes de adicionar novos widgets
+        for widget in self.frame.winfo_children():
+            widget.destroy()
 
-# carrega os dados do usuario
-        # Procura os dados do usuário logado
+        # Carrega os dados do usuário
         usuario_logado = self.carregar_dados(self.usuario_logado)
 
         if usuario_logado:
-            # Frame de perfil com borda e padding
+            # Frame de perfil centralizado
             perfil_frame = tk.Frame(self.frame, bg="#181818", bd=2, relief="groove")
-            perfil_frame.pack(pady=30, padx=30, fill="x", expand=True)
+            perfil_frame.place(relx=0.5, rely=0.3, anchor="center", relwidth=0.5)
 
-            # Ícone ou avatar (opcional, pode usar um emoji ou imagem)
-            avatar = tk.Label(perfil_frame, text="👤", font=("Arial", 48), bg="#181818", fg="#D9A87E")
-            avatar.pack(pady=(20, 10))
+            # Avatar circular (emoji)
+            avatar = tk.Label(perfil_frame, text="👤", font=("Arial", 64), bg="#181818", fg="#D9A87E")
+            avatar.pack(pady=(30, 10))
 
             # Nome do usuário
             label_nome = tk.Label(
                 perfil_frame,
                 text=usuario_logado['usuario'],
-                font=("Arial", 20, "bold"),
+                font=("Arial", 22, "bold"),
                 bg="#181818",
                 fg="#D9A87E"
             )
-            label_nome.pack(pady=(0, 5))
+            label_nome.pack(pady=(0, 8))
+
+            # Linha divisória
+            divider = tk.Frame(perfil_frame, bg="#D9A87E", height=2)
+            divider.pack(fill="x", padx=40, pady=(0, 12))
 
             # Email do usuário
             label_email = tk.Label(

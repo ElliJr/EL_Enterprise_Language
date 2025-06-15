@@ -23,6 +23,10 @@ class Graficos:
         submit_button = tk.Button(self.parent, text="Gerar Gráfico de Pizza", command=self.submit_values)
         submit_button.pack(pady=20)
 
+        # Crie um frame para o gráfico
+        self.frame_grafico = tk.Frame(self.parent)
+        self.frame_grafico.pack(pady=10, fill="both", expand=True)
+
     def submit_values(self):
         try:
             input_values = self.entry.get().split(',')
@@ -33,9 +37,10 @@ class Graficos:
         except ValueError as e:
             messagebox.showerror("Erro de entrada", str(e))
 
-    @staticmethod
     def generate_pie_chart(self, values):
-        from matplotlib import pyplot as plt
+        # Limpa o frame antes de desenhar um novo gráfico
+        for widget in self.frame_grafico.winfo_children():
+            widget.destroy()
         labels = [f'Valor {i+1}' for i in range(len(values))]
         fig, ax = plt.subplots(figsize=(5, 4))
         ax.pie(values, labels=labels, autopct='%1.1f%%')

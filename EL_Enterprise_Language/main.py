@@ -14,15 +14,13 @@ def abrir_janelas(usuario_logado):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    # A LoginTela define o título e a geometria da janela, então não é estritamente necessário aqui,
-    # mas é bom ter um título padrão.
     root.title("Aplicação de Gestão Financeira") 
-    # A LoginTela define a geometria para 1300x800, então esta linha pode ser redundante
-    # ou servir como um fallback inicial antes da LoginTela assumir o controle.
     root.geometry("550x500") 
 
+    # Define a cor de fundo da janela principal
+    root.configure(bg="#181818")
+
     # Cria uma instância da tela de login, passando a função de callback
-    # O parâmetro 'on_login' da LoginTela é usado para a função que será chamada após um login bem-sucedido.
     login_tela = LoginTela(root, on_login=abrir_janelas) 
     
     root.mainloop()

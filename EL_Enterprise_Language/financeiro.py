@@ -6,21 +6,21 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 class Graficos:
     def __init__(self, parent):
         self.parent = parent
-        self.parent.configure(bg="#0a0a0a")
+        self.parent.configure(bg="#1E3A5F")
 
         # Header
         header = tk.Label(
             parent, text="Enterprise Dashboard",
             font=("Segoe UI", 26, "bold"),
-            bg="#040404", fg="#00f7ff", pady=16
+            bg="#1E3A5F", fg="#00f7ff", pady=16
         )
         header.pack(fill="x")
 
         # Cards Frame
-        cards_frame = tk.Frame(parent, bg="#0a0a0a")
+        cards_frame = tk.Frame(parent, bg="#081A31")
         cards_frame.pack(fill="x", pady=(30, 10), padx=40)
 
-        card_bg = "#111111"
+        card_bg = "#1E3A5F"
         card_fg = "#00f7ff"
         card_font = ("Segoe UI", 28, "bold")
         card_label_font = ("Segoe UI", 13)
@@ -35,7 +35,7 @@ class Graficos:
         self.card_faturamento.pack(side="left", expand=True, fill="both")
 
         # Gráfico
-        self.chart_frame = tk.Frame(parent, bg="#0a0a0a")
+        self.chart_frame = tk.Frame(parent, bg="#1E3A5F")
         self.chart_frame.pack(fill="both", expand=True, padx=40, pady=(10, 30))
 
         self.labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun']
@@ -59,12 +59,12 @@ class Graficos:
         # Limpa gráfico anterior
         for widget in self.chart_frame.winfo_children():
             widget.destroy()
-        fig, ax = plt.subplots(figsize=(7, 3.5), facecolor="#111111")
+        fig, ax = plt.subplots(figsize=(7, 3.5), facecolor="#1E3A5F")
         bars = ax.bar(
             self.labels, self.valores,
             color="#00f7ffcc", edgecolor="#00f7ff", linewidth=2
         )
-        ax.set_facecolor("#111111")
+        ax.set_facecolor("#1E3A5F")
         ax.tick_params(colors="#66fcf1", labelsize=12)
         ax.spines['bottom'].set_color('#00f7ff')
         ax.spines['left'].set_color('#00f7ff')
@@ -81,7 +81,6 @@ class Graficos:
 
     def _atualizar_grafico(self):
         # Atualiza os dados com valores aleatórios
-        self.valores = [random.randint(100, 600) for _ in self.labels]
         self._criar_grafico()
         self._mostrar_notificacao("Gráfico atualizado com novos dados de vendas!")
         # Atualiza a cada 3 segundos
@@ -95,13 +94,11 @@ class Graficos:
             bd=2, relief="ridge", padx=16, pady=8
         )
         notif.pack(anchor="se", pady=5)
-        # Remove após 4.2 segundos
-        notif.after(4200, notif.destroy)
+        # Remove após 4.2 segundos, se ainda existir
+        def destroy_if_exists():
+            if notif.winfo_exists():
+                notif.destroy()
+        notif.after(4200, destroy_if_exists)
 
-# Para testar isoladamente:
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Financeiro")
-    root.geometry("900x600")
-    Graficos(root)
-    root.mainloop()
+
+# Para testar isolada

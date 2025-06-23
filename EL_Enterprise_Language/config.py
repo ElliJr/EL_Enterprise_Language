@@ -64,7 +64,7 @@ class PainelControle:
             print("Abrir grupo doméstico do sistema Enterprise Language")
 
     def abrir_rede_internet(self):
-        webbrowser.open_new_tab("https://enterpriselanguage.vercel.app")
+        webbrowser.open_new_tab("file:///C:/Users/ellij/OneDrive/Documentos/EL_Enterprise_Language/EL_Enterprise_Language/financeiro.html")
 
     def abrir_gadgets(self):
         webbrowser.open_new_tab("https://www.google.com/search?q=gadgets+windows")

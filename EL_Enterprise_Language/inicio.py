@@ -27,11 +27,11 @@ class Inicio:
             fg="#e0e0e0"
         )
         self.subtitulo.place(relx=0.05, rely=0.55, anchor="w")
-
+        
         # Botão de ação
         self.botao = tk.Button(
             self.banner,
-            text="CONHEÇA NOSSOS PLANOS",
+            text="Conheça nosso site",
             font=("Arial", 12, "bold"),
             bg="#22c55e",
             fg="white",

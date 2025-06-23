@@ -91,40 +91,14 @@ class Janelas:
 
     def criar_pagina_financeiro(self):
         frame_financeiro = tk.Frame(self.content_frame, bg="white")
-        label_titulo = tk.Label(frame_financeiro, text="Gráficos", font=("Arial", 24), bg="white")
-        label_titulo.pack(pady=20)
-
-        # Gráficos (a serem atualizados)
-        self.label_rendimento = tk.Label(frame_financeiro, bg="white")
-        self.label_rendimento.pack(pady=10)
-        self.label_faturamento = tk.Label(frame_financeiro, bg="white")
-        self.label_faturamento.pack(pady=10)
-
-        # Botões
-        btn_atualizar = tk.Button(frame_financeiro, text="Atualizar Gráficos", command=self.atualizar_graficos)
-        btn_atualizar.pack(pady=10)
-
-        btn_piechart = tk.Button(
-            frame_financeiro,
-            text="Abrir Gráfico de Pizza",
-            bg=self.cor_secundaria,
-            fg="white",
-            font=("Arial", 12),
-            command=self.abrir_grafico_pizza
-        )
-        btn_piechart.pack(pady=10)
-
+        try:
+            Graficos(frame_financeiro)
+        except Exception as e:
+            print(f"[ERRO] Falha ao carregar página Financeiro: {e}")
         self.paginas["Financeiro"] = frame_financeiro
-        self.atualizar_graficos()
 
-    def abrir_grafico_pizza(self):
-        # Exemplo com valores fictícios
-        Graficos.generate_pie_chart([10, 20, 30])
-
-    def atualizar_graficos(self):
-        # Aqui você pode implementar o carregamento de gráficos reais
-        self.label_rendimento.config(text="Gráfico de rendimento atualizado")
-        self.label_faturamento.config(text="Gráfico de faturamento atualizado")
+        # Adiciona o frame financeiro à página
+        frame_financeiro.pack(fill=tk.BOTH, expand=True)
 
     def criar_pagina_configuracoes(self):
         frame_config = tk.Frame(self.content_frame, bg="white")

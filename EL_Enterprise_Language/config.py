@@ -4,7 +4,7 @@ import webbrowser
 class PainelControle:
     def __init__(self, master, abrir_func=None):
         self.abrir_func = abrir_func  # Função para abrir páginas do sistema, se necessário
-        self.frame = tk.Frame(master, bg="white")
+        self.frame = tk.Frame(master, bg="#1E3A5F")
         self.frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
         tk.Label(self.frame, text="Painel de Controle", font=("Arial", 28), bg="#1E3A5F", fg="white").grid(row=0, column=0, columnspan=6, pady=(0, 20))

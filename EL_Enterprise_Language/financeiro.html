@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <title>Enterprise Dashboard </title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Reset básico */
+        * {
+            box-sizing: border-box;
+            margin: 0; padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #0a0a0a;
+            color: #00f7ff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        header {
+            background-color: #040404;
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 2px solid #00f7ff;
+        }
+
+        /* Container geral */
+        main {
+            flex: 1;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Cards */
+        .card {
+            background-color: #111111;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 0 15px #00f7ff44;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: box-shadow 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 0 25px #00f7ffaa;
+        }
+        .card h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .card p {
+            font-size: 1.2rem;
+            color: #66fcf1;
+        }
+
+        /* Gráfico */
+        .chart-container {
+            grid-column: span 2;
+            background-color: #111111;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 0 15px #00f7ff44;
+        }
+
+        @media (max-width: 700px) {
+            .chart-container {
+                grid-column: span 1;
+            }
+        }
+
+        /* Notificações Acumulativas */
+        #notificacoes {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .notificacao {
+            background: #00f7ff;
+            color: #000;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px #00f7ffbb;
+            font-weight: bold;
+            user-select: none;
+            min-width: 220px;
+            opacity: 1;
+            animation: fadeOut 0.5s ease forwards;
+            animation-delay: 4s;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        Enterprise Dashboard
+    </header>
+
+    <main>
+        <div class="card">
+            <h2 id="vendas">1200</h2>
+            <p>Vendas</p>
+        </div>
+        <div class="card">
+            <h2 id="usuarios">340</h2>
+            <p>Usuários</p>
+        </div>
+        <div class="card">
+            <h2 id="faturamento">R$ 48.000</h2>
+            <p>Faturamento</p>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </main>
+
+    <div id="notificacoes"></div>
+
+    <script>
+        const ctx = document.getElementById('salesChart').getContext('2d');
+
+        const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Vendas Mensais',
+                data: [200, 300, 400, 350, 450, 500],
+                backgroundColor: '#00f7ffcc',
+                borderColor: '#00f7ff',
+                borderWidth: 2,
+                borderRadius: 6,
+                hoverBackgroundColor: '#00f7ff'
+            }]
+        };
+
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#00f7ff'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#66fcf1' },
+                        grid: { color: '#222' }
+                    },
+                    y: {
+                        ticks: { color: '#66fcf1' },
+                        grid: { color: '#222' }
+                    }
+                }
+            }
+        };
+
+        const salesChart = new Chart(ctx, config);
+
+        // Função para criar notificações acumulativas
+        function mostrarNotificacao(msg) {
+            const container = document.getElementById('notificacoes');
+            const notif = document.createElement('div');
+            notif.className = 'notificacao';
+            notif.innerText = msg;
+            container.appendChild(notif);
+
+            // Remover após 4.5 segundos (tempo do fadeOut + margem)
+            setTimeout(() => {
+                notif.remove();
+            }, 4200);
+        }
+
+        // Atualiza o gráfico e gera notificação a cada 10 segundos
+        setInterval(() => {
+            data.datasets[0].data = labels.map(() => Math.floor(Math.random() * 500 + 100));
+            salesChart.update();
+
+            mostrarNotificacao('Gráfico atualizado com novos dados de vendas!');
+        }, 3000);
+    </script>
+</body>
+</html>

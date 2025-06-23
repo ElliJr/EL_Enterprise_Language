@@ -25,19 +25,20 @@ class ContaUser:
         # Carrega os dados do usuário
         usuario_logado = self.carregar_dados(self.usuario_logado)
 
-        if usuario_logado:
+        # Se vier uma lista, pega o primeiro elemento
+        if isinstance(usuario_logado, list) and usuario_logado:
+            usuario_logado = usuario_logado[0]
+
+        if usuario_logado and isinstance(usuario_logado, dict):
             # Frame de perfil centralizado
             perfil_frame = tk.Frame(self.frame, bg="#181818", bd=2, relief="groove")
             perfil_frame.place(relx=0.5, rely=0.3, anchor="center", relwidth=0.5)
 
-            # Avatar circular (emoji)
-            avatar = tk.Label(perfil_frame, text="👤", font=("Arial", 64), bg="#181818", fg="#D9A87E")
-            avatar.pack(pady=(30, 10))
 
             # Nome do usuário
             label_nome = tk.Label(
                 perfil_frame,
-                text=usuario_logado['usuario'],
+                text=usuario_logado.get('usuario', 'Desconhecido'),
                 font=("Arial", 22, "bold"),
                 bg="#181818",
                 fg="#D9A87E"
@@ -51,12 +52,23 @@ class ContaUser:
             # Email do usuário
             label_email = tk.Label(
                 perfil_frame,
-                text=f"Email: {usuario_logado['email']}",
+                text=f"Email: {usuario_logado.get('email', 'Não informado')}",
                 font=("Arial", 14),
                 bg="#181818",
                 fg="#FFFFFF"
             )
             label_email.pack(pady=(0, 20))
+
+            # Exemplo: mostrar mais dados se existirem
+            if 'nome' in usuario_logado:
+                label_nome_completo = tk.Label(
+                    perfil_frame,
+                    text=f"Nome completo: {usuario_logado.get('nome', '')}",
+                    font=("Arial", 12),
+                    bg="#181818",
+                    fg="#FFFFFF"
+                )
+                label_nome_completo.pack(pady=(0, 10))
 
         else:
             label_nome = tk.Label(

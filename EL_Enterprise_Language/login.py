@@ -95,6 +95,10 @@ class LoginTela:
 
             # Verifica se a requisição foi bem-sucedida (código 200)
             if response.status_code == 200:
+                resposta = response.json()
+                self.jwt_token = resposta.get("token")
+                self.tipo_usuario = resposta.get("tipo", "user")
+                # Passe esse token para as próximas requisições
                 messagebox.showinfo("Sucesso", "Login realizado com sucesso!")
                 self.login_frame.pack_forget() # Esconde o frame de login
                 if self.on_login:
@@ -184,3 +188,16 @@ class LoginTela:
         """
         with open(arquivo, 'w') as f:
             json.dump(dados, f, indent=4)
+
+    def exemplo_requisicao_com_token(self):
+        """
+        Exemplo de como fazer uma requisição GET para a rota /conta usando o token JWT no cabeçalho.
+        """
+        headers = {"Authorization": f"Bearer {self.jwt_token}"}
+        response = requests.post("https://ellidev21.pythonanywhere.com/conta", headers=headers)
+
+        if response.status_code == 200:
+            dados_conta = response.json()
+            messagebox.showinfo("Dados da Conta", f"Dados: {dados_conta}")
+        else:
+            self.tratar_erro_requisicao(response, "Erro ao buscar dados da conta")
